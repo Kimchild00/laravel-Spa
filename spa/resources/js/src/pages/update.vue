@@ -3,7 +3,7 @@
       <!-- form submit -->
 
 
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="updateForm">
       <div class="form-group">
         <label for="name">Nama</label>
         <input type="text" class="form-control" v-model="inputs.nama" placeholder="Masukan nama pelanggan">
@@ -17,7 +17,7 @@
         <textarea type="text" v-model="inputs.alamat" class="form-control" 
           placeholder="Masukan alamat pelanggan"> </textarea>
       </div>
-      <button type="submit" class="btn btn-primary" @click="submitForm">Submit</button>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   </div>
 </template>
@@ -32,14 +32,23 @@ import axios from 'axios'
       }
     },
     methods: {
-      submitForm() {
-          fetch('/api/customers/' + this.$route.params.id, {
-            method: 'POST',
-            body: JSON.stringify(this.inputs),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }).then(this.$router.push('/'))
+      updateForm() {
+          axios.post('/api/customers/' + this.$route.params.id, this.inputs)
+            .then(response => {
+                this.$router.push('/');
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.log(error.response.data);
+            });
+
+          // fetch('/api/customers/' + this.$route.params.id, {
+          //   method: 'POST',
+          //   body: JSON.stringify(this.inputs),
+          //   headers: {
+          //     'Content-Type': 'application/json'
+          //   }
+          // }).then(this.$router.push('/'))
       },
     },
     created() {

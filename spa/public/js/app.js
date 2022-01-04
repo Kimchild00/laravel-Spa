@@ -5322,11 +5322,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  watch: {
-    $route: function $route() {
-      $("#navbarCollapse").collapse("hide");
+  data: function data() {
+    return {
+      isLogin: false
+    };
+  },
+  methods: {
+    logout: function logout() {
+      localStorage.removeItem('isLogin');
+      this.isLogin = false;
+      this.$router.push({
+        name: 'login'
+      });
     }
+  },
+  mounted: function mounted() {
+    this.isLogin = localStorage.getItem('isLogin');
+  },
+  watch: {// $route() {
+    //   $("#navbarCollapse").collapse("hide");
+    // },
   }
 });
 
@@ -5371,6 +5390,7 @@ __webpack_require__.r(__webpack_exports__);
   name: 'create-form',
   data: function data() {
     return {
+      isLogin: localStorage.getItem('isLogin'),
       inputs: {}
     };
   },
@@ -5378,21 +5398,27 @@ __webpack_require__.r(__webpack_exports__);
     submitForm: function submitForm() {
       var _this = this;
 
-      //   axios.post('/api/customers', this.inputs)
-      //     .then(response => {
-      //         console.log(response.data);
-      //     })
-      //     .catch(error => {
-      //         console.log(error.response.data);
-      //     });
-      fetch('/api/customers', {
-        method: 'POST',
-        body: JSON.stringify(this.inputs),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(function (response) {
+      axios.post('/api/customers', this.inputs).then(function (response) {
         _this.$router.push('/');
+
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error.response.data);
+      }); // fetch('/api/customers', {
+      //   method: 'POST',
+      //   body: JSON.stringify(this.inputs),
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   }
+      // })
+      // .then(response => {
+      // })
+    }
+  },
+  mounted: function mounted() {
+    if (!this.isLogin) {
+      this.$router.push({
+        name: 'login'
       });
     }
   }
@@ -5446,12 +5472,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
  // import VueAxios from 'vue-axios'
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      data: []
+      isLogin: localStorage.getItem('isLogin'),
+      data: [],
+      datauser: []
     };
   },
   created: function created() {
@@ -5467,6 +5503,16 @@ __webpack_require__.r(__webpack_exports__);
     //         console.log(response.data);
     //         this.data = response.data;
     // })
+
+    var token = "Bearer " + localStorage.getItem("jwt");
+    axios__WEBPACK_IMPORTED_MODULE_0___default().get('http://127.0.0.1:8000/api/user', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    }).then(function (response) {
+      console.log(response);
+      _this.datauser = response.data; // assign response to state user
+    });
   },
   methods: {
     hapus: function hapus(id) {
@@ -5479,7 +5525,24 @@ __webpack_require__.r(__webpack_exports__);
 
         _this2.data.splice(i, 1);
       });
+    },
+    logout: function logout() {
+      localStorage.removeItem('isLogin');
+      localStorage.removeItem('jwt');
+      this.isLogin = false;
+      this.$router.push({
+        name: 'login'
+      });
     }
+  },
+  mounted: function mounted() {
+    if (!this.isLogin) {
+      this.$router.push({
+        name: 'login'
+      });
+    }
+
+    this.isLogin = localStorage.getItem('isLogin');
   }
 });
 
@@ -5531,21 +5594,29 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    submitForm: function submitForm() {
-      fetch('/api/customers/' + this.$route.params.id, {
-        method: 'POST',
-        body: JSON.stringify(this.inputs),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(this.$router.push('/'));
+    updateForm: function updateForm() {
+      var _this = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/customers/' + this.$route.params.id, this.inputs).then(function (response) {
+        _this.$router.push('/');
+
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error.response.data);
+      }); // fetch('/api/customers/' + this.$route.params.id, {
+      //   method: 'POST',
+      //   body: JSON.stringify(this.inputs),
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   }
+      // }).then(this.$router.push('/'))
     }
   },
   created: function created() {
-    var _this = this;
+    var _this2 = this;
 
     axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/customers/' + this.$route.params.id).then(function (response) {
-      _this.inputs = response.data;
+      _this2.inputs = response.data;
     });
   }
 });
@@ -5641,24 +5712,31 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+ // import login from './src/pages/login.vue';
 
 vue__WEBPACK_IMPORTED_MODULE_3__["default"].use(vue_router__WEBPACK_IMPORTED_MODULE_4__["default"]);
+var routes = [{
+  path: '/',
+  name: 'home',
+  component: _src_pages_index_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+}, {
+  path: '/login',
+  name: 'login',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_src_pages_masuk_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./src/pages/masuk.vue */ "./resources/js/src/pages/masuk.vue"));
+  }
+}, {
+  path: '/create-form',
+  name: 'create-form',
+  component: _src_pages_create_form_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+}, {
+  path: '/edit/:id',
+  name: 'edit',
+  component: _src_pages_update_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
+}];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_4__["default"]({
   mode: 'history',
-  linkExactActiveClass: 'active',
-  routes: [{
-    path: '/',
-    name: 'home',
-    component: _src_pages_index_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
-  }, {
-    path: '/create-form',
-    name: 'create-form',
-    component: _src_pages_create_form_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
-  }, {
-    path: '/edit/:id',
-    name: 'edit',
-    component: _src_pages_update_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
-  }]
+  routes: routes
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (router);
 
@@ -28544,7 +28622,7 @@ var render = function () {
         _c(
           "router-link",
           { staticClass: "navbar-brand", attrs: { to: { name: "home" } } },
-          [_vm._v("Laravel-Vue SPA")]
+          [_vm._v("Kim")]
         ),
         _vm._v(" "),
         _vm._m(0),
@@ -28733,11 +28811,7 @@ var render = function () {
         _vm._v(" "),
         _c(
           "button",
-          {
-            staticClass: "btn btn-primary",
-            attrs: { type: "submit" },
-            on: { click: _vm.submitForm },
-          },
+          { staticClass: "btn btn-primary", attrs: { type: "submit" } },
           [_vm._v("Submit")]
         ),
       ]
@@ -28767,52 +28841,70 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("table", { staticClass: "table" }, [
-    _vm._m(0),
+  return _c("div", [
+    _c("div", { staticStyle: { float: "right" } }, [
+      _c("p", [_vm._v("email: " + _vm._s(_vm.datauser.email))]),
+      _vm._v(" "),
+      _c("p", [_vm._v("name: " + _vm._s(_vm.datauser.name))]),
+    ]),
     _vm._v(" "),
     _c(
-      "tbody",
-      _vm._l(_vm.data, function (d) {
-        return _c("tr", { key: d.id }, [
-          _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(d.id))]),
-          _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(d.nama))]),
-          _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(d.alamat))]),
-          _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(d.email))]),
-          _vm._v(" "),
-          _c(
-            "td",
-            [
-              _c(
-                "router-link",
-                {
-                  staticClass: "btn btn-info",
-                  attrs: { "data-toggle": "collapse", to: "/edit/" + d.id },
-                },
-                [_vm._v("\n            edit\n          ")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-danger",
-                  on: {
-                    click: function ($event) {
-                      return _vm.hapus(d.id)
+      "button",
+      {
+        staticClass: "btn btn-danger",
+        staticStyle: { float: "right" },
+        on: { click: _vm.logout },
+      },
+      [_vm._v("Logout")]
+    ),
+    _vm._v(" "),
+    _c("table", { staticClass: "table" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c(
+        "tbody",
+        _vm._l(_vm.data, function (d) {
+          return _c("tr", { key: d.id }, [
+            _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(d.id))]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(d.nama))]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(d.alamat))]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(d.email))]),
+            _vm._v(" "),
+            _c(
+              "td",
+              [
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "btn btn-info",
+                    attrs: { "data-toggle": "collapse", to: "/edit/" + d.id },
+                  },
+                  [_vm._v("\n              edit\n            ")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-danger",
+                    on: {
+                      click: function ($event) {
+                        return _vm.hapus(d.id)
+                      },
                     },
                   },
-                },
-                [_vm._v("hapus")]
-              ),
-            ],
-            1
-          ),
-        ])
-      }),
-      0
-    ),
+                  [_vm._v("hapus")]
+                ),
+              ],
+              1
+            ),
+          ])
+        }),
+        0
+      ),
+    ]),
   ])
 }
 var staticRenderFns = [
@@ -28824,7 +28916,7 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
         _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("namat")]),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("nama")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("alamat")]),
         _vm._v(" "),
@@ -28864,7 +28956,7 @@ var render = function () {
         on: {
           submit: function ($event) {
             $event.preventDefault()
-            return _vm.submitForm.apply(null, arguments)
+            return _vm.updateForm.apply(null, arguments)
           },
         },
       },
@@ -28949,11 +29041,7 @@ var render = function () {
         _vm._v(" "),
         _c(
           "button",
-          {
-            staticClass: "btn btn-primary",
-            attrs: { type: "submit" },
-            on: { click: _vm.submitForm },
-          },
+          { staticClass: "btn btn-primary", attrs: { type: "submit" } },
           [_vm._v("Submit")]
         ),
       ]
@@ -44391,6 +44479,39 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	(() => {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = (chunkId) => {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce((promises, key) => {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.u = (chunkId) => {
+/******/ 			// return url for filenames not based on template
+/******/ 			if (chunkId === "resources_js_src_pages_masuk_vue") return "js/" + chunkId + ".js";
+/******/ 			// return url for filenames based on template
+/******/ 			return undefined;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get mini-css chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference all chunks
+/******/ 		__webpack_require__.miniCssF = (chunkId) => {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + ".css";
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
 /******/ 		__webpack_require__.g = (function() {
@@ -44406,6 +44527,52 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/load script */
+/******/ 	(() => {
+/******/ 		var inProgress = {};
+/******/ 		// data-webpack is not used as build has no uniqueName
+/******/ 		// loadScript function to load a script via script tag
+/******/ 		__webpack_require__.l = (url, done, key, chunkId) => {
+/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
+/******/ 			var script, needAttach;
+/******/ 			if(key !== undefined) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				for(var i = 0; i < scripts.length; i++) {
+/******/ 					var s = scripts[i];
+/******/ 					if(s.getAttribute("src") == url) { script = s; break; }
+/******/ 				}
+/******/ 			}
+/******/ 			if(!script) {
+/******/ 				needAttach = true;
+/******/ 				script = document.createElement('script');
+/******/ 		
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 		
+/******/ 				script.src = url;
+/******/ 			}
+/******/ 			inProgress[url] = [done];
+/******/ 			var onScriptComplete = (prev, event) => {
+/******/ 				// avoid mem leaks in IE.
+/******/ 				script.onerror = script.onload = null;
+/******/ 				clearTimeout(timeout);
+/******/ 				var doneFns = inProgress[url];
+/******/ 				delete inProgress[url];
+/******/ 				script.parentNode && script.parentNode.removeChild(script);
+/******/ 				doneFns && doneFns.forEach((fn) => (fn(event)));
+/******/ 				if(prev) return prev(event);
+/******/ 			}
+/******/ 			;
+/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
+/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
+/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
+/******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
@@ -44428,6 +44595,11 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		__webpack_require__.p = "/";
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/jsonp chunk loading */
 /******/ 	(() => {
 /******/ 		// no baseURI
@@ -44440,7 +44612,44 @@ module.exports = JSON.parse('{"_from":"axios@^0.21","_id":"axios@0.21.4","_inBun
 /******/ 			"css/app": 0
 /******/ 		};
 /******/ 		
-/******/ 		// no chunk on demand loading
+/******/ 		__webpack_require__.f.j = (chunkId, promises) => {
+/******/ 				// JSONP chunk loading for javascript
+/******/ 				var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 				if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 		
+/******/ 					// a Promise means "currently loading".
+/******/ 					if(installedChunkData) {
+/******/ 						promises.push(installedChunkData[2]);
+/******/ 					} else {
+/******/ 						if("css/app" != chunkId) {
+/******/ 							// setup Promise in chunk cache
+/******/ 							var promise = new Promise((resolve, reject) => (installedChunkData = installedChunks[chunkId] = [resolve, reject]));
+/******/ 							promises.push(installedChunkData[2] = promise);
+/******/ 		
+/******/ 							// start chunk loading
+/******/ 							var url = __webpack_require__.p + __webpack_require__.u(chunkId);
+/******/ 							// create error before stack unwound to get useful stacktrace later
+/******/ 							var error = new Error();
+/******/ 							var loadingEnded = (event) => {
+/******/ 								if(__webpack_require__.o(installedChunks, chunkId)) {
+/******/ 									installedChunkData = installedChunks[chunkId];
+/******/ 									if(installedChunkData !== 0) installedChunks[chunkId] = undefined;
+/******/ 									if(installedChunkData) {
+/******/ 										var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 										var realSrc = event && event.target && event.target.src;
+/******/ 										error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 										error.name = 'ChunkLoadError';
+/******/ 										error.type = errorType;
+/******/ 										error.request = realSrc;
+/******/ 										installedChunkData[1](error);
+/******/ 									}
+/******/ 								}
+/******/ 							};
+/******/ 							__webpack_require__.l(url, loadingEnded, "chunk-" + chunkId, chunkId);
+/******/ 						} else installedChunks[chunkId] = 0;
+/******/ 					}
+/******/ 				}
+/******/ 		};
 /******/ 		
 /******/ 		// no prefetching
 /******/ 		

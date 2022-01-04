@@ -2,7 +2,7 @@
   <div>
     <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
       <router-link :to="{ name: 'home' }" class="navbar-brand"
-        >Laravel-Vue SPA</router-link
+        >Kim</router-link
       >
       <button
         class="navbar-toggler"
@@ -32,6 +32,9 @@
               Create
             </router-link>
           </li>
+          <!-- <li v-show="isLogin" class="nav-item">
+            <button class="btn btn-danger" @click="logout">Logout</button>
+          </li> -->
         </ul>
       </div>
     </nav>
@@ -44,10 +47,25 @@
 
 <script>
 export default {
+  data() {
+    return {
+      isLogin : false,
+    };
+  },
+  methods: {
+    logout(){
+      localStorage.removeItem('isLogin');
+      this.isLogin = false;
+      this.$router.push({name :'login'});
+    }
+  },
+  mounted() {
+      this.isLogin = localStorage.getItem('isLogin');
+  },
   watch: {
-    $route() {
-      $("#navbarCollapse").collapse("hide");
-    },
+    // $route() {
+    //   $("#navbarCollapse").collapse("hide");
+    // },
   },
 };
 </script>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\data;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DataController extends Controller
@@ -55,5 +56,11 @@ class DataController extends Controller
         $data->delete();
 
         return redirect('/data')->with('success', 'Data Deleted');
+    }
+
+    public function showUser($id)
+    {
+        $data = User::find($id);
+        return response()->json($data);
     }
 }

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
-Route::get('/{any}', function () {
+Route::any('/{any}', function () {
     return view('spa');
-})->where('any', '.*');
+})->where('any', '^(?!api).*');
+
